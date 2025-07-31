@@ -70,7 +70,6 @@
 
   <div class="menu" id="mainMenu">
     <button onclick="showSection('obfuscate')">🎭 Obfusquer un fichier</button>
-    <button onclick="showSection('getId')">📺 Prendre l'ID d'une chaîne</button>
     <button onclick="showSection('musicSearch')">🎵 Rechercher une musique</button>
     <button onclick="showSection('imageSearch')">🖼️ Rechercher une image</button>
     <button onclick="showSection('spotify')">🎧 Spotify</button>
@@ -86,11 +85,14 @@
   </div>
 
 
-  <div class="section" id="musicSearch">
-    <h2>🎵 Rechercher une musique</h2>
-    <p>🔧 Fonctionnalité en cours d'intégration.</p>
-    <div class="back" onclick="goBack()">← Retour au menu</div>
-  </div>
+  <div class="section" id="downloadSong">
+  <h2>🎵 Télécharger une musique YouTube</h2>
+  <input type="text" id="songQuery" placeholder="Entrez le titre de la chanson ou un lien YouTube" style="width:90%; max-width:400px; padding:0.5rem;">
+  <br><br>
+  <button onclick="downloadMusic()">Télécharger</button>
+  <p id="songResult" style="margin-top:1rem;"></p>
+  <div class="back" onclick="goBack()">← Retour au menu</div>
+</div>
 
   <div class="section" id="imageSearch">
     <h2>🖼️ Rechercher une image</h2>
@@ -106,6 +108,62 @@
 
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
   <script>
+    async function downloadMusic() {
+  const query = document.getElementById("songQuery").value.trim();
+  const resultBox = document.getElementById("songResult");
+
+  if (!query) {
+    resultBox.innerText = "❌ Veuillez entrer un titre ou un lien YouTube.";
+    return;
+  }
+
+  resultBox.innerText = "🔍 Recherche en cours...";
+
+  try {
+    const ytSearch = await fetch(`https://api.safone.dev/api/ytsearch?q=${encodeURIComponent(query)}`);
+    const searchData = await ytSearch.json();
+
+    if (!searchData || !searchData.result || !searchData.result[0]) {
+      resultBox.innerText = "❌ Aucune musique trouvée.";
+      return;
+    }
+
+    const video = searchData.result[0];
+    const videoUrl = video.url;
+
+    // Essayer d'obtenir le MP3 via une API tierce
+    const mp3Apis = [
+      `https://xploader-api.vercel.app/ytmp3?url=${videoUrl}`,
+      `https://api.ryzendesu.vip/api/downloader/ytmp3?url=${videoUrl}`,
+      `https://api.dreaded.site/api/ytdl/audio?url=${videoUrl}`
+    ];
+
+    for (const api of mp3Apis) {
+      try {
+        const res = await fetch(api);
+        const data = await res.json();
+
+        const mp3Url = data?.result?.downloadUrl || data?.url;
+
+        if (mp3Url) {
+          resultBox.innerHTML = `
+            ✅ Titre : <b>${video.title}</b><br>
+            <audio controls src="${mp3Url}" style="width:100%; max-width:400px;"></audio><br>
+            <a href="${mp3Url}" download="${video.title}.mp3">⬇️ Télécharger le MP3</a>
+          `;
+          return;
+        }
+      } catch (err) {
+        continue; // essayer la prochaine API
+      }
+    }
+
+    resultBox.innerText = "❌ Impossible de récupérer le fichier MP3 pour cette vidéo.";
+  } catch (e) {
+    resultBox.innerText = "❌ Une erreur est survenue.";
+    console.error(e);
+  }
+    }
     function showSection(id) {
       document.getElementById("mainMenu").style.display = "none";
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
