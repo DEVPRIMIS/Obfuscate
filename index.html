@@ -2,158 +2,214 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Centre de Cryptage – PrimisTool</title>
+  <title>Primis – Cryptage & Minification</title>
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <style>
     body {
-      margin: 0;
-      padding: 1rem;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #0f0f0f;
-      color: #f1f1f1;
+      color: white;
+      padding: 2rem;
+      text-align: center;
     }
     h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 1.6rem;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .menu button {
+      display: block;
+      width: 250px;
+      margin: 1rem auto;
+      padding: 0.9rem;
+      font-size: 1rem;
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid #333;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .menu button:hover {
+      background-color: #333;
     }
     .section {
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: none;
+      margin-top: 2rem;
     }
-    .section h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      color: #4caf50;
-    }
-    input[type="file"], button, textarea, a {
-      width: 100%;
-      margin-top: 0.5rem;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: none;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #4caf50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #3e9143;
+    input[type="file"], select {
+      margin-top: 1rem;
+      padding: 0.5rem;
     }
     textarea {
-      background-color: #111;
-      color: #0f0;
+      width: 90%;
+      height: 300px;
+      margin-top: 1rem;
       font-family: monospace;
-      height: 200px;
-      resize: vertical;
+      background: #1a1a1a;
+      color: #00ff88;
+      border: none;
+      padding: 1rem;
     }
-    a {
-      background-color: #2196f3;
-      text-align: center;
-      color: white;
-      text-decoration: none;
+    .back {
+      margin-top: 2rem;
+      cursor: pointer;
+      color: #aaa;
+      text-decoration: underline;
+    }
+    a.download {
       display: none;
-    }
-    a:hover {
-      background-color: #1976d2;
+      margin-top: 1rem;
+      color: #00ff88;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-<h1>🔐 Centre de Cryptage – PrimisTool</h1>
+  <h1>🔐 Primis – Centre de Cryptage</h1>
 
-<div class="section" id="jsSection">
-  <h2>🔒 Cryptage JavaScript</h2>
-  <input type="file" accept=".js" onchange="handleFile(this, 'js')" />
-  <button onclick="process('js')">Crypter JavaScript</button>
-  <textarea id="output-js" readonly placeholder="Résultat JavaScript ici..."></textarea>
-  <a id="download-js" download="fichier_crypte.js">⬇️ Télécharger</a>
-</div>
+  <div class="menu" id="mainMenu">
+    <button onclick="showSection('js')">🔒 Cryptage JavaScript</button>
+    <button onclick="showSection('html')">🧼 Minification HTML</button>
+    <button onclick="showSection('css')">🎨 Minification CSS</button>
+    <button onclick="showSection('json')">📦 Minification JSON</button>
+    <button onclick="showSection('text')">✍️ Cryptage de texte brut</button>
+  </div>
 
-<div class="section" id="htmlSection">
-  <h2>📄 Minifier HTML</h2>
-  <input type="file" accept=".html" onchange="handleFile(this, 'html')" />
-  <button onclick="process('html')">Minifier HTML</button>
-  <textarea id="output-html" readonly placeholder="Résultat HTML ici..."></textarea>
-  <a id="download-html" download="fichier_minifie.html">⬇️ Télécharger</a>
-</div>
+  <!-- JS, HTML, CSS, JSON Sections -->
+  <div class="section" id="js">
+    <h2>Cryptage JavaScript</h2>
+    <input type="file" id="fileJS" accept=".js"><br>
+    <button onclick="processFile('js')">Crypter</button>
+    <textarea id="outputJS" readonly></textarea><br>
+    <a class="download" id="downloadJS" download="obfusque.js">⬇️ Télécharger</a>
+    <div class="back" onclick="goBack()">← Retour</div>
+  </div>
 
-<div class="section" id="cssSection">
-  <h2>🎨 Minifier CSS</h2>
-  <input type="file" accept=".css" onchange="handleFile(this, 'css')" />
-  <button onclick="process('css')">Minifier CSS</button>
-  <textarea id="output-css" readonly placeholder="Résultat CSS ici..."></textarea>
-  <a id="download-css" download="fichier_minifie.css">⬇️ Télécharger</a>
-</div>
+  <div class="section" id="html">
+    <h2>Minification HTML</h2>
+    <input type="file" id="fileHTML" accept=".html"><br>
+    <button onclick="processFile('html')">Minifier</button>
+    <textarea id="outputHTML" readonly></textarea><br>
+    <a class="download" id="downloadHTML" download="minified.html">⬇️ Télécharger</a>
+    <div class="back" onclick="goBack()">← Retour</div>
+  </div>
 
-<div class="section" id="jsonSection">
-  <h2>📦 Minifier JSON</h2>
-  <input type="file" accept=".json" onchange="handleFile(this, 'json')" />
-  <button onclick="process('json')">Minifier JSON</button>
-  <textarea id="output-json" readonly placeholder="Résultat JSON ici..."></textarea>
-  <a id="download-json" download="fichier_minifie.json">⬇️ Télécharger</a>
-</div>
+  <div class="section" id="css">
+    <h2>Minification CSS</h2>
+    <input type="file" id="fileCSS" accept=".css"><br>
+    <button onclick="processFile('css')">Minifier</button>
+    <textarea id="outputCSS" readonly></textarea><br>
+    <a class="download" id="downloadCSS" download="minified.css">⬇️ Télécharger</a>
+    <div class="back" onclick="goBack()">← Retour</div>
+  </div>
 
-<script>
-  const fileContents = {};
+  <div class="section" id="json">
+    <h2>Minification JSON</h2>
+    <input type="file" id="fileJSON" accept=".json"><br>
+    <button onclick="processFile('json')">Minifier</button>
+    <textarea id="outputJSON" readonly></textarea><br>
+    <a class="download" id="downloadJSON" download="minified.json">⬇️ Télécharger</a>
+    <div class="back" onclick="goBack()">← Retour</div>
+  </div>
 
-  function handleFile(input, type) {
-    const reader = new FileReader();
-    const file = input.files[0];
-    if (!file) return;
+  <!-- Text input section -->
+  <div class="section" id="text">
+    <h2>Cryptage de texte brut</h2>
+    <label for="textType">Type de contenu :</label>
+    <select id="textType">
+      <option value="js">JavaScript</option>
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="json">JSON</option>
+    </select><br>
+    <textarea id="inputText" placeholder="Collez ici votre code..."></textarea><br>
+    <button onclick="processText()">Crypter</button>
+    <textarea id="outputText" readonly></textarea><br>
+    <a class="download" id="downloadText" download="cryptage.txt">⬇️ Télécharger</a>
+    <div class="back" onclick="goBack()">← Retour</div>
+  </div>
 
-    reader.onload = e => fileContents[type] = e.target.result;
-    reader.readAsText(file);
-  }
-
-  function process(type) {
-    const code = fileContents[type];
-    if (!code) {
-      alert("📄 Veuillez d'abord sélectionner un fichier.");
-      return;
+  <script>
+    function showSection(id) {
+      document.getElementById("mainMenu").style.display = "none";
+      document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
     }
 
-    let result = "";
-    if (type === 'js') {
-      const obfuscation = JavaScriptObfuscator.obfuscate(code, {
-        compact: true,
-        controlFlowFlattening: true,
-        controlFlowFlatteningThreshold: 0.75,
-        deadCodeInjection: true,
-        deadCodeInjectionThreshold: 0.4,
-        disableConsoleOutput: true,
-        identifierNamesGenerator: 'hexadecimal',
-        renameGlobals: true,
-        stringArray: true,
-        stringArrayEncoding: ['base64'],
-        stringArrayThreshold: 0.75
-      });
-      result = obfuscation.getObfuscatedCode();
-    } else {
-      result = code.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
+    function goBack() {
+      document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+      document.getElementById("mainMenu").style.display = "block";
     }
 
-    const output = document.getElementById(`output-${type}`);
-    const download = document.getElementById(`download-${type}`);
+    function processFile(type) {
+      const input = document.getElementById("file" + type.toUpperCase());
+      const output = document.getElementById("output" + type.toUpperCase());
+      const download = document.getElementById("download" + type.toUpperCase());
 
-    output.value = result;
+      if (!input.files.length) {
+        alert("📂 Veuillez sélectionner un fichier.");
+        return;
+      }
 
-    const blob = new Blob([result], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    download.href = url;
-    download.style.display = 'block';
-  }
-</script>
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        let content = e.target.result;
+        let result = minifyOrObfuscate(type, content);
+        output.value = result;
+        prepareDownload(result, download);
+      };
+      reader.readAsText(input.files[0]);
+    }
+
+    function processText() {
+      const type = document.getElementById("textType").value;
+      const input = document.getElementById("inputText").value;
+      const output = document.getElementById("outputText");
+      const download = document.getElementById("downloadText");
+
+      if (!input.trim()) {
+        alert("📝 Veuillez coller un texte à crypter.");
+        return;
+      }
+
+      const result = minifyOrObfuscate(type, input);
+      output.value = result;
+      prepareDownload(result, download);
+    }
+
+    function minifyOrObfuscate(type, code) {
+      if (type === "js") {
+        return JavaScriptObfuscator.obfuscate(code, {
+          compact: true,
+          controlFlowFlattening: true,
+          controlFlowFlatteningThreshold: 0.8,
+          deadCodeInjection: true,
+          deadCodeInjectionThreshold: 0.4,
+          disableConsoleOutput: true,
+          identifierNamesGenerator: 'hexadecimal',
+          renameGlobals: true,
+          stringArray: true,
+          stringArrayEncoding: ['base64'],
+          stringArrayThreshold: 1
+        }).getObfuscatedCode();
+      } else {
+        return code
+          .replace(/<!--[\s\S]*?-->/g, '')
+          .replace(/\/\*[\s\S]*?\*\//g, '')
+          .replace(/\s{2,}/g, ' ')
+          .replace(/\n/g, '')
+          .trim();
+      }
+    }
+
+    function prepareDownload(result, downloadLink) {
+      const blob = new Blob([result], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.style.display = "inline-block";
+    }
+  </script>
 
 </body>
 </html> 
