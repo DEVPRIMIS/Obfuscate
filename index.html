@@ -56,7 +56,7 @@
       color: #aaa;
       text-decoration: underline;
     }
-    a.download {
+    a {
       display: none;
       margin-top: 1rem;
       color: #00ff88;
@@ -76,44 +76,47 @@
     <button onclick="showSection('text')">✍️ Cryptage de texte brut</button>
   </div>
 
-  <!-- JS, HTML, CSS, JSON Sections -->
+  <!-- JS -->
   <div class="section" id="js">
     <h2>Cryptage JavaScript</h2>
     <input type="file" id="fileJS" accept=".js"><br>
     <button onclick="processFile('js')">Crypter</button>
     <textarea id="outputJS" readonly></textarea><br>
-    <a class="download" id="downloadJS" download="obfusque.js">⬇️ Télécharger</a>
+    <a id="downloadJS" download="obfusque.js">⬇️ Télécharger</a>
     <div class="back" onclick="goBack()">← Retour</div>
   </div>
 
+  <!-- HTML -->
   <div class="section" id="html">
     <h2>Minification HTML</h2>
     <input type="file" id="fileHTML" accept=".html"><br>
     <button onclick="processFile('html')">Minifier</button>
     <textarea id="outputHTML" readonly></textarea><br>
-    <a class="download" id="downloadHTML" download="minified.html">⬇️ Télécharger</a>
+    <a id="downloadHTML" download="minified.html">⬇️ Télécharger</a>
     <div class="back" onclick="goBack()">← Retour</div>
   </div>
 
+  <!-- CSS -->
   <div class="section" id="css">
     <h2>Minification CSS</h2>
     <input type="file" id="fileCSS" accept=".css"><br>
     <button onclick="processFile('css')">Minifier</button>
     <textarea id="outputCSS" readonly></textarea><br>
-    <a class="download" id="downloadCSS" download="minified.css">⬇️ Télécharger</a>
+    <a id="downloadCSS" download="minified.css">⬇️ Télécharger</a>
     <div class="back" onclick="goBack()">← Retour</div>
   </div>
 
+  <!-- JSON -->
   <div class="section" id="json">
     <h2>Minification JSON</h2>
     <input type="file" id="fileJSON" accept=".json"><br>
     <button onclick="processFile('json')">Minifier</button>
     <textarea id="outputJSON" readonly></textarea><br>
-    <a class="download" id="downloadJSON" download="minified.json">⬇️ Télécharger</a>
+    <a id="downloadJSON" download="minified.json">⬇️ Télécharger</a>
     <div class="back" onclick="goBack()">← Retour</div>
   </div>
 
-  <!-- Text input section -->
+  <!-- Texte Brut -->
   <div class="section" id="text">
     <h2>Cryptage de texte brut</h2>
     <label for="textType">Type de contenu :</label>
@@ -123,10 +126,10 @@
       <option value="css">CSS</option>
       <option value="json">JSON</option>
     </select><br>
-    <textarea id="inputText" placeholder="Collez ici votre code..."></textarea><br>
+    <textarea id="inputText" placeholder="Collez ici votre code brut..."></textarea><br>
     <button onclick="processText()">Crypter</button>
     <textarea id="outputText" readonly></textarea><br>
-    <a class="download" id="downloadText" download="cryptage.txt">⬇️ Télécharger</a>
+    <a id="downloadText" download="cryptage.txt">⬇️ Télécharger</a>
     <div class="back" onclick="goBack()">← Retour</div>
   </div>
 
@@ -154,11 +157,12 @@
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        let content = e.target.result;
-        let result = minifyOrObfuscate(type, content);
+        const content = e.target.result;
+        const result = minifyOrObfuscate(type, content);
         output.value = result;
         prepareDownload(result, download);
       };
+
       reader.readAsText(input.files[0]);
     }
 
@@ -178,9 +182,9 @@
       prepareDownload(result, download);
     }
 
-    function minifyOrObfuscate(type, code) {
+    function minifyOrObfuscate(type, content) {
       if (type === "js") {
-        return JavaScriptObfuscator.obfuscate(code, {
+        return JavaScriptObfuscator.obfuscate(content, {
           compact: true,
           controlFlowFlattening: true,
           controlFlowFlatteningThreshold: 0.8,
@@ -194,7 +198,7 @@
           stringArrayThreshold: 1
         }).getObfuscatedCode();
       } else {
-        return code
+        return content
           .replace(/<!--[\s\S]*?-->/g, '')
           .replace(/\/\*[\s\S]*?\*\//g, '')
           .replace(/\s{2,}/g, ' ')
@@ -203,11 +207,11 @@
       }
     }
 
-    function prepareDownload(result, downloadLink) {
+    function prepareDownload(result, link) {
       const blob = new Blob([result], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.style.display = "inline-block";
+      link.href = url;
+      link.style.display = "inline-block";
     }
   </script>
 
