@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Obfuscateur JS - PrimisTech</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      margin: 10px;
+      padding: 10px;
+    }
+    #downloadLink {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Obfuscateur JS - PrimisTech</h1>
+  <input type="file" id="fileInput" accept=".js"><br>
+  <button onclick="encrypt()">Crypter</button><br>
+  <a id="downloadLink">Télécharger le fichier obfusqué</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
+  <script>
+    async function encrypt() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+
+      if (!file || !file.name.endsWith('.js')) {
+        alert('❌ Veuillez sélectionner un fichier JavaScript (.js)');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const code = event.target.result;
+
+        // Obfuscation
+        const obfuscated = JavaScriptObfuscator.obfuscate(code, {
+          compact: true,
+          controlFlowFlattening: true,
+          controlFlowFlatteningThreshold: 1,
+          deadCodeInjection: false,
+          debugProtection: false,
+          disableConsoleOutput: true,
+          identifierNamesGenerator: "hexadecimal",
+          renameGlobals: true,
+          rotateStringArray: true,
+          selfDefending: true,
+          stringArray: true,
+          stringArrayEncoding: ['base64'],
+          stringArrayThreshold: 1,
+          transformObjectKeys: true,
+          unicodeEscapeSequence: true
+        });
+
+        // Création du blob pour téléchargement
+        const blob = new Blob([obfuscated.getObfuscatedCode()], { type: 'text/javascript' });
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = 'obfusqué_' + file.name;
+        downloadLink.style.display = 'inline-block';
+      };
+
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
