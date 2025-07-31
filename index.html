@@ -2,63 +2,62 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Obfuscateur JS – Primis</title>
+  <title>Cryptage Fichiers – Primis</title>
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f2f2f2;
       padding: 2rem;
       text-align: center;
     }
-
     h1 {
       margin-bottom: 1rem;
     }
-
-    input[type="file"] {
+    select, input[type="file"], button {
       margin: 1rem 0;
+      padding: 0.6rem;
+      font-size: 1rem;
     }
-
     textarea {
       width: 90%;
       height: 300px;
       margin-top: 1rem;
       font-family: monospace;
     }
-
-    button {
-      padding: 0.7rem 1.5rem;
-      font-size: 1rem;
-      margin-top: 1rem;
-      cursor: pointer;
-    }
-
     #downloadBtn {
       display: none;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
 
-  <h1>🔐 Obfuscateur JavaScript</h1>
+  <h1>🔐 Cryptage de Fichiers – Primis</h1>
 
-  <input type="file" id="jsFile" accept=".js">
-  <br>
-  <button onclick="obfuscateCode()">Obfusquer</button>
-  <br><br>
-  <textarea id="output" readonly placeholder="Le code obfusqué s’affichera ici..."></textarea>
-  <br>
-  <a id="downloadBtn" href="#" download="obfusque.js">⬇️ Télécharger le fichier</a>
+  <label for="type">Sélectionnez le type de fichier :</label><br>
+  <select id="type">
+    <option value="js">JavaScript</option>
+    <option value="html">HTML</option>
+    <option value="css">CSS</option>
+    <option value="json">JSON</option>
+  </select><br>
+
+  <input type="file" id="fileInput" accept=".js,.html,.css,.json"><br>
+  <button onclick="processFile()">Crypter</button>
+
+  <textarea id="output" readonly placeholder="Le code crypté s’affichera ici..."></textarea><br>
+  <a id="downloadBtn" href="#" download="output.txt">⬇️ Télécharger</a>
 
   <script>
-    function obfuscateCode() {
-      const fileInput = document.getElementById('jsFile');
+    function processFile() {
+      const fileInput = document.getElementById('fileInput');
       const output = document.getElementById('output');
       const downloadBtn = document.getElementById('downloadBtn');
+      const type = document.getElementById('type').value;
 
       if (!fileInput.files.length) {
-        alert("📄 Veuillez sélectionner un fichier .js");
+        alert("📄 Veuillez sélectionner un fichier.");
         return;
       }
 
@@ -67,29 +66,34 @@
 
       reader.onload = function(event) {
         const code = event.target.result;
+        let result = "";
 
-        // Obfuscation
-        const obfuscationResult = JavaScriptObfuscator.obfuscate(code, {
-          compact: true,
-          controlFlowFlattening: true,
-          controlFlowFlatteningThreshold: 0.75,
-          deadCodeInjection: true,
-          deadCodeInjectionThreshold: 0.4,
-          disableConsoleOutput: true,
-          identifierNamesGenerator: 'hexadecimal',
-          renameGlobals: true,
-          stringArray: true,
-          stringArrayEncoding: ['base64'],
-          stringArrayThreshold: 0.75
-        });
+        if (type === "js") {
+          const obfuscated = JavaScriptObfuscator.obfuscate(code, {
+            compact: true,
+            controlFlowFlattening: true,
+            controlFlowFlatteningThreshold: 0.75,
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 0.4,
+            disableConsoleOutput: true,
+            identifierNamesGenerator: 'hexadecimal',
+            renameGlobals: true,
+            stringArray: true,
+            stringArrayEncoding: ['base64'],
+            stringArrayThreshold: 0.75
+          });
+          result = obfuscated.getObfuscatedCode();
+        } else if (type === "html" || type === "css" || type === "json") {
+          result = code.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
+        }
 
-        const obfuscatedCode = obfuscationResult.getObfuscatedCode();
-        output.value = obfuscatedCode;
+        output.value = result;
 
-        // Télécharger le code
-        const blob = new Blob([obfuscatedCode], { type: 'text/javascript' });
+        // Télécharger
+        const blob = new Blob([result], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         downloadBtn.href = url;
+        downloadBtn.download = `fichier_crypte.${type}`;
         downloadBtn.style.display = 'inline-block';
       };
 
