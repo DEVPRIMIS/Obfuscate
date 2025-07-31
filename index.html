@@ -86,11 +86,14 @@
   </div>
 
   <!-- Other sections -->
-  <div class="section" id="getId">
-    <h2>📺 Prendre l'ID d'une chaîne</h2>
-    <p>🔧 Fonctionnalité en cours d'intégration.</p>
-    <div class="back" onclick="goBack()">← Retour au menu</div>
-  </div>
+<div class="section" id="getId">
+  <h2>📺 Prendre l'ID d'une chaîne WhatsApp</h2>
+  <input type="text" id="channelLink" placeholder="Collez le lien de la chaîne ici" style="width:90%; max-width:400px; padding:0.5rem;">
+  <br><br>
+  <button onclick="extractChannelId()">Obtenir l'ID</button>
+  <p id="channelResult" style="margin-top:1rem;"></p>
+  <div class="back" onclick="goBack()">← Retour au menu</div>
+</div>
 
   <div class="section" id="musicSearch">
     <h2>🎵 Rechercher une musique</h2>
@@ -112,6 +115,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
   <script>
+    function extractChannelId() {
+  const input = document.getElementById("channelLink").value.trim();
+  const output = document.getElementById("channelResult");
+
+  if (!input || !input.includes("https://whatsapp.com/channel/")) {
+    output.innerText = "❌ Lien non valide. Assurez-vous qu'il contient https://whatsapp.com/channel/";
+    return;
+  }
+
+  const rawId = input.split("https://whatsapp.com/channel/")[1].split(/[?#]/)[0]; // on nettoie s'il y a des paramètres
+  const fullId = `${rawId}@newsletter`;
+
+  output.innerHTML = `✅ ID de la chaîne : <code>${fullId}</code>`;
+    }
     function showSection(id) {
       document.getElementById("mainMenu").style.display = "none";
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
