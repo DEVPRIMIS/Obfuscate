@@ -34,22 +34,31 @@
   <button onclick="encrypt()">Crypter</button><br>
   <a id="downloadLink">Télécharger le fichier obfusqué</a>
 
-  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
-  <script>
-    async function encrypt() {
-      const input = document.getElementById('fileInput');
-      const file = input.files[0];
+<script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
+<script>
+  const input = document.getElementById('fileInput');
+  const downloadLink = document.getElementById('downloadLink');
 
-      if (!file || !file.name.endsWith('.js')) {
-        alert('❌ Veuillez sélectionner un fichier JavaScript (.js)');
-        return;
-      }
+  function resetDownloadLink() {
+    downloadLink.style.display = 'none';
+    downloadLink.href = '#';
+    downloadLink.download = '';
+  }
 
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const code = event.target.result;
+  function encrypt() {
+    resetDownloadLink(); // Nettoyer le lien précédent
 
-        // Obfuscation
+    const file = input.files[0];
+    if (!file || !file.name.endsWith('.js')) {
+      alert('❌ Veuillez sélectionner un fichier JavaScript (.js)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const code = event.target.result;
+
+      try {
         const obfuscated = JavaScriptObfuscator.obfuscate(code, {
           compact: true,
           controlFlowFlattening: true,
@@ -68,16 +77,19 @@
           unicodeEscapeSequence: true
         });
 
-        // Création du blob pour téléchargement
         const blob = new Blob([obfuscated.getObfuscatedCode()], { type: 'text/javascript' });
-        const downloadLink = document.getElementById('downloadLink');
         downloadLink.href = URL.createObjectURL(blob);
         downloadLink.download = 'obfusqué_' + file.name;
         downloadLink.style.display = 'inline-block';
-      };
+        downloadLink.textContent = "📥 Télécharger le fichier crypté";
 
-      reader.readAsText(file);
-    }
-  </script>
-</body>
-</html>
+        // Ne pas réinitialiser input automatiquement
+      } catch (err) {
+        alert('❌ Une erreur est survenue pendant l\'obfuscation.');
+        console.error(err);
+      }
+    };
+
+    reader.readAsText(file);
+  }
+</script>
