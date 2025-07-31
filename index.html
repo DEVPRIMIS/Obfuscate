@@ -1,136 +1,159 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>🔐 Primis Cryptage Tools</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Centre de Cryptage – PrimisTool</title>
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: white;
-      text-align: center;
-      padding: 2rem;
-    }
-    h1 { font-size: 2rem; margin-bottom: 1.5rem; }
-    .menu button, .back, button {
-      background: #1e1e1e;
-      color: white;
+      margin: 0;
       padding: 1rem;
-      margin: 0.5rem auto;
-      border: 1px solid #333;
-      border-radius: 8px;
-      cursor: pointer;
-      display: block;
-      width: 90%;
-      max-width: 300px;
-      font-size: 1rem;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #f1f1f1;
     }
-    .section { display: none; margin-top: 2rem; }
-    input[type="file"] {
-      margin-top: 1rem;
-      color: white;
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.6rem;
     }
-    #result, #htmlResult {
-      margin-top: 1rem;
-      width: 90%;
-      max-width: 600px;
-      height: 200px;
-      font-family: monospace;
+    .section {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
     }
-    a.download-link {
-      display: block;
-      margin-top: 1rem;
+    .section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
       color: #4caf50;
+    }
+    input[type="file"], button, textarea, a {
+      width: 100%;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: none;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3e9143;
+    }
+    textarea {
+      background-color: #111;
+      color: #0f0;
+      font-family: monospace;
+      height: 200px;
+      resize: vertical;
+    }
+    a {
+      background-color: #2196f3;
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      display: none;
+    }
+    a:hover {
+      background-color: #1976d2;
     }
   </style>
 </head>
 <body>
 
-  <h1>🔧 PrimisTool – Centre de Cryptage</h1>
+<h1>🔐 Centre de Cryptage – PrimisTool</h1>
 
-  <div id="mainMenu" class="menu">
-    <button onclick="showSection('jsSection')">🎭 Obfuscation JavaScript</button>
-    <button onclick="showSection('htmlSection')">🔐 Cryptage HTML</button>
-  </div>
+<div class="section" id="jsSection">
+  <h2>🔒 Cryptage JavaScript</h2>
+  <input type="file" accept=".js" onchange="handleFile(this, 'js')" />
+  <button onclick="process('js')">Crypter JavaScript</button>
+  <textarea id="output-js" readonly placeholder="Résultat JavaScript ici..."></textarea>
+  <a id="download-js" download="fichier_crypte.js">⬇️ Télécharger</a>
+</div>
 
-  <!-- JavaScript Obfuscation -->
-  <div id="jsSection" class="section">
-    <h2>🎭 Obfuscation JavaScript</h2>
-    <input type="file" id="jsFile" accept=".js"><br>
-    <button onclick="obfuscateJS()">Obfusquer</button>
-    <textarea id="result" readonly placeholder="Code obfusqué ici..."></textarea>
-    <a id="downloadJs" class="download-link" download="obfusque.js">📥 Télécharger</a>
-    <div class="back" onclick="goBack()">← Retour</div>
-  </div>
+<div class="section" id="htmlSection">
+  <h2>📄 Minifier HTML</h2>
+  <input type="file" accept=".html" onchange="handleFile(this, 'html')" />
+  <button onclick="process('html')">Minifier HTML</button>
+  <textarea id="output-html" readonly placeholder="Résultat HTML ici..."></textarea>
+  <a id="download-html" download="fichier_minifie.html">⬇️ Télécharger</a>
+</div>
 
-  <!-- HTML Encryption -->
-  <div id="htmlSection" class="section">
-    <h2>🔐 Crypter HTML (Base64)</h2>
-    <input type="file" id="htmlFile" accept=".html"><br>
-    <button onclick="encryptHTML()">Crypter</button>
-    <textarea id="htmlResult" readonly placeholder="Code HTML crypté ici..."></textarea>
-    <a id="downloadHtml" class="download-link" download="crypt_html.html">📥 Télécharger</a>
-    <div class="back" onclick="goBack()">← Retour</div>
-  </div>
+<div class="section" id="cssSection">
+  <h2>🎨 Minifier CSS</h2>
+  <input type="file" accept=".css" onchange="handleFile(this, 'css')" />
+  <button onclick="process('css')">Minifier CSS</button>
+  <textarea id="output-css" readonly placeholder="Résultat CSS ici..."></textarea>
+  <a id="download-css" download="fichier_minifie.css">⬇️ Télécharger</a>
+</div>
 
-  <script>
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-      document.getElementById('mainMenu').style.display = 'none';
-      document.getElementById(id).style.display = 'block';
+<div class="section" id="jsonSection">
+  <h2>📦 Minifier JSON</h2>
+  <input type="file" accept=".json" onchange="handleFile(this, 'json')" />
+  <button onclick="process('json')">Minifier JSON</button>
+  <textarea id="output-json" readonly placeholder="Résultat JSON ici..."></textarea>
+  <a id="download-json" download="fichier_minifie.json">⬇️ Télécharger</a>
+</div>
+
+<script>
+  const fileContents = {};
+
+  function handleFile(input, type) {
+    const reader = new FileReader();
+    const file = input.files[0];
+    if (!file) return;
+
+    reader.onload = e => fileContents[type] = e.target.result;
+    reader.readAsText(file);
+  }
+
+  function process(type) {
+    const code = fileContents[type];
+    if (!code) {
+      alert("📄 Veuillez d'abord sélectionner un fichier.");
+      return;
     }
 
-    function goBack() {
-      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-      document.getElementById('mainMenu').style.display = 'block';
+    let result = "";
+    if (type === 'js') {
+      const obfuscation = JavaScriptObfuscator.obfuscate(code, {
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.75,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.4,
+        disableConsoleOutput: true,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: true,
+        stringArray: true,
+        stringArrayEncoding: ['base64'],
+        stringArrayThreshold: 0.75
+      });
+      result = obfuscation.getObfuscatedCode();
+    } else {
+      result = code.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
     }
 
-    function obfuscateJS() {
-      const file = document.getElementById('jsFile').files[0];
-      const result = document.getElementById('result');
-      const download = document.getElementById('downloadJs');
-      if (!file) return alert("📄 Sélectionne un fichier .js");
+    const output = document.getElementById(`output-${type}`);
+    const download = document.getElementById(`download-${type}`);
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const code = e.target.result;
-        const obfuscated = JavaScriptObfuscator.obfuscate(code, {
-          compact: true,
-          controlFlowFlattening: true,
-          controlFlowFlatteningThreshold: 1,
-          disableConsoleOutput: true,
-          stringArray: true,
-          stringArrayEncoding: ['base64'],
-          renameGlobals: true
-        }).getObfuscatedCode();
+    output.value = result;
 
-        result.value = obfuscated;
-        const blob = new Blob([obfuscated], { type: 'text/javascript' });
-        download.href = URL.createObjectURL(blob);
-        download.style.display = 'block';
-      };
-      reader.readAsText(file);
-    }
+    const blob = new Blob([result], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    download.href = url;
+    download.style.display = 'block';
+  }
+</script>
 
-    function encryptHTML() {
-      const file = document.getElementById('htmlFile').files[0];
-      const result = document.getElementById('htmlResult');
-      const download = document.getElementById('downloadHtml');
-      if (!file) return alert("📄 Sélectionne un fichier .html");
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64 = btoa(unescape(encodeURIComponent(e.target.result)));
-        const wrapped = `<script>document.write(decodeURIComponent(escape(atob("${base64}"))));</script>`;
-        result.value = wrapped;
-
-        const blob = new Blob([wrapped], { type: 'text/html' });
-        download.href = URL.createObjectURL(blob);
-        download.style.display = 'block';
-      };
-      reader.readAsText(file);
-    }
-  </script>
 </body>
 </html> 
