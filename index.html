@@ -108,62 +108,45 @@
 
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
   <script>
-    async function downloadMusic() {
+async function downloadMusic() {
   const query = document.getElementById("songQuery").value.trim();
   const resultBox = document.getElementById("songResult");
 
-  if (!query) {
-    resultBox.innerText = "❌ Veuillez entrer un titre ou un lien YouTube.";
+  if (!query || !query.includes("youtube.com/watch?v=")) {
+    resultBox.innerText = "❌ Veuillez entrer un lien YouTube valide.";
     return;
   }
 
-  resultBox.innerText = "🔍 Recherche en cours...";
+  resultBox.innerText = "🔄 Téléchargement en cours...";
 
-  try {
-    const ytSearch = await fetch(`https://api.safone.dev/api/ytsearch?q=${encodeURIComponent(query)}`);
-    const searchData = await ytSearch.json();
+  const apis = [
+    `https://xploader-api.vercel.app/ytmp3?url=${query}`,
+    `https://api.ryzendesu.vip/api/downloader/ytmp3?url=${query}`,
+    `https://api.dreaded.site/api/ytdl/audio?url=${query}`
+  ];
 
-    if (!searchData || !searchData.result || !searchData.result[0]) {
-      resultBox.innerText = "❌ Aucune musique trouvée.";
-      return;
-    }
+  for (const api of apis) {
+    try {
+      const res = await fetch(api);
+      const data = await res.json();
 
-    const video = searchData.result[0];
-    const videoUrl = video.url;
+      const mp3Url = data?.result?.downloadUrl || data?.url || data?.result;
 
-    // Essayer d'obtenir le MP3 via une API tierce
-    const mp3Apis = [
-      `https://xploader-api.vercel.app/ytmp3?url=${videoUrl}`,
-      `https://api.ryzendesu.vip/api/downloader/ytmp3?url=${videoUrl}`,
-      `https://api.dreaded.site/api/ytdl/audio?url=${videoUrl}`
-    ];
-
-    for (const api of mp3Apis) {
-      try {
-        const res = await fetch(api);
-        const data = await res.json();
-
-        const mp3Url = data?.result?.downloadUrl || data?.url;
-
-        if (mp3Url) {
-          resultBox.innerHTML = `
-            ✅ Titre : <b>${video.title}</b><br>
-            <audio controls src="${mp3Url}" style="width:100%; max-width:400px;"></audio><br>
-            <a href="${mp3Url}" download="${video.title}.mp3">⬇️ Télécharger le MP3</a>
-          `;
-          return;
-        }
-      } catch (err) {
-        continue; // essayer la prochaine API
+      if (mp3Url) {
+        resultBox.innerHTML = `
+          ✅ Fichier prêt !<br>
+          <audio controls src="${mp3Url}" style="width:100%; max-width:400px;"></audio><br>
+          <a href="${mp3Url}" download="musique.mp3">⬇️ Télécharger le MP3</a>
+        `;
+        return;
       }
+    } catch (err) {
+      continue;
     }
-
-    resultBox.innerText = "❌ Impossible de récupérer le fichier MP3 pour cette vidéo.";
-  } catch (e) {
-    resultBox.innerText = "❌ Une erreur est survenue.";
-    console.error(e);
   }
-    }
+
+  resultBox.innerText = "❌ Toutes les APIs ont échoué. Réessaie plus tard.";
+}
     function showSection(id) {
       document.getElementById("mainMenu").style.display = "none";
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
