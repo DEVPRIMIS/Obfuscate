@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -30,7 +29,7 @@
       margin-bottom: 1rem;
       color: #4caf50;
     }
-    input[type="file"], button, textarea, a {
+    input[type="file"], button, textarea, a, select, input[type="text"] {
       width: 100%;
       margin-top: 0.5rem;
       margin-bottom: 1rem;
@@ -68,52 +67,47 @@
     }
   </style>
 </head>
-<body>
-
-<h1>🔐 Centre de Cryptage – PrimisTool</h1>
-
-<div class="section" id="jsSection">
+<body><h1>🔐 Centre de Cryptage – PrimisTool</h1><div class="section" id="jsSection">
   <h2>🔒 Cryptage JavaScript</h2>
-  <input type="file" accept=".js" onchange="handleFile(this, 'js')" />
-  <button onclick="process('js')">Crypter JavaScript</button>
-  <textarea id="output-js" readonly placeholder="Résultat JavaScript ici..."></textarea>
-  <a id="download-js" download="fichier_crypte.js">⬇️ Télécharger</a>
-</div>
+  <input type="file" accept=".js" onchange="handleFile(this, 'js')" />  <select id="jsType" onchange="toggleNameInput()">
+    <option value="normal">🔐 Cryptage standard</option>
+    <option value="custom">🧩 Cryptage avec nom personnalisé</option>
+  </select>  <input type="text" id="customName" placeholder="Entrez un nom personnalisé..." style="display: none;" /><button onclick="process('js')">Crypter JavaScript</button>
 
-<div class="section" id="htmlSection">
+  <textarea id="output-js" readonly placeholder="Résultat JavaScript ici..."></textarea><a id="download-js" download="fichier_crypte.js">⬇️ Télécharger</a>
+
+</div><div class="section" id="htmlSection">
   <h2>📄 Minifier HTML</h2>
   <input type="file" accept=".html" onchange="handleFile(this, 'html')" />
   <button onclick="process('html')">Minifier HTML</button>
   <textarea id="output-html" readonly placeholder="Résultat HTML ici..."></textarea>
   <a id="download-html" download="fichier_minifie.html">⬇️ Télécharger</a>
-</div>
-
-<div class="section" id="cssSection">
+</div><div class="section" id="cssSection">
   <h2>🎨 Minifier CSS</h2>
   <input type="file" accept=".css" onchange="handleFile(this, 'css')" />
   <button onclick="process('css')">Minifier CSS</button>
   <textarea id="output-css" readonly placeholder="Résultat CSS ici..."></textarea>
   <a id="download-css" download="fichier_minifie.css">⬇️ Télécharger</a>
-</div>
-
-<div class="section" id="jsonSection">
+</div><div class="section" id="jsonSection">
   <h2>📦 Minifier JSON</h2>
   <input type="file" accept=".json" onchange="handleFile(this, 'json')" />
   <button onclick="process('json')">Minifier JSON</button>
   <textarea id="output-json" readonly placeholder="Résultat JSON ici..."></textarea>
   <a id="download-json" download="fichier_minifie.json">⬇️ Télécharger</a>
-</div>
-
-<script>
+</div><script>
   const fileContents = {};
 
   function handleFile(input, type) {
     const reader = new FileReader();
     const file = input.files[0];
     if (!file) return;
-
     reader.onload = e => fileContents[type] = e.target.result;
     reader.readAsText(file);
+  }
+
+  function toggleNameInput() {
+    const type = document.getElementById('jsType').value;
+    document.getElementById('customName').style.display = type === 'custom' ? 'block' : 'none';
   }
 
   function process(type) {
@@ -125,20 +119,44 @@
 
     let result = "";
     if (type === 'js') {
-      const obfuscation = JavaScriptObfuscator.obfuscate(code, {
-        compact: true,
-        controlFlowFlattening: true,
-        controlFlowFlatteningThreshold: 0.75,
-        deadCodeInjection: true,
-        deadCodeInjectionThreshold: 0.4,
-        disableConsoleOutput: true,
-        identifierNamesGenerator: 'hexadecimal',
-        renameGlobals: true,
-        stringArray: true,
-        stringArrayEncoding: ['base64'],
-        stringArrayThreshold: 0.75
-      });
-      result = obfuscation.getObfuscatedCode();
+      const jsType = document.getElementById('jsType').value;
+      const name = document.getElementById('customName').value.trim() || 'PrimisName';
+
+      if (jsType === 'custom') {
+        result = JavaScriptObfuscator.obfuscate(code, {
+          compact: true,
+          controlFlowFlattening: true,
+          controlFlowFlatteningThreshold: 0.8,
+          deadCodeInjection: true,
+          deadCodeInjectionThreshold: 0.4,
+          disableConsoleOutput: true,
+          identifierNamesGenerator: 'hexadecimal',
+          renameGlobals: true,
+          stringArray: true,
+          stringArrayEncoding: ['base64'],
+          stringArrayThreshold: 1,
+          identifierNamesCache: {},
+          identifierGenerator: () => {
+            const clean = name.replace(/[^a-zA-Z素GIDDY晴TENNOR晴]/g, "");
+            const rand = Math.random().toString(36).substring(2, 4);
+            return clean + rand;
+          }
+        }).getObfuscatedCode();
+      } else {
+        result = JavaScriptObfuscator.obfuscate(code, {
+          compact: true,
+          controlFlowFlattening: true,
+          controlFlowFlatteningThreshold: 0.75,
+          deadCodeInjection: true,
+          deadCodeInjectionThreshold: 0.4,
+          disableConsoleOutput: true,
+          identifierNamesGenerator: 'hexadecimal',
+          renameGlobals: true,
+          stringArray: true,
+          stringArrayEncoding: ['base64'],
+          stringArrayThreshold: 0.75
+        }).getObfuscatedCode();
+      }
     } else {
       result = code.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
     }
@@ -153,8 +171,5 @@
     download.href = url;
     download.style.display = 'block';
   }
-</script>
-
-</body>
+</script></body>
 </html> 
- 
