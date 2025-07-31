@@ -2,94 +2,160 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Obfuscateur JS - PrimisTech</title>
+  <title>PrimisTool – Multi-Fonctions</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #f0f0f0;
       text-align: center;
-      padding: 50px;
-      background-color: #f4f4f4;
+      padding: 30px;
     }
+
     h1 {
-      color: #333;
+      margin-bottom: 40px;
+      font-size: 32px;
     }
-    input, button {
-      margin: 10px;
-      padding: 10px;
+
+    .menu button {
+      display: block;
+      margin: 15px auto;
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
     }
+
+    .menu button:hover {
+      background-color: #555;
+    }
+
+    .section {
+      display: none;
+      margin-top: 30px;
+    }
+
     #downloadLink {
       display: none;
       margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
+      font-size: 18px;
+      color: #4caf50;
+    }
+
+    .back {
+      margin-top: 40px;
+      color: #888;
+      cursor: pointer;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>🔐 Obfuscateur JS - PrimisTech</h1>
-  <input type="file" id="fileInput" accept=".js"><br>
-  <button onclick="encrypt()">Crypter</button><br>
-  <a id="downloadLink">Télécharger le fichier obfusqué</a>
 
-<script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
-<script>
-  const input = document.getElementById('fileInput');
-  const downloadLink = document.getElementById('downloadLink');
+  <h1>🔧 PrimisTool – Centre d'outils</h1>
 
-  function resetDownloadLink() {
-    downloadLink.style.display = 'none';
-    downloadLink.href = '#';
-    downloadLink.download = '';
-  }
+  <div class="menu" id="mainMenu">
+    <button onclick="showSection('obfuscate')">🎭 Obfusquer un fichier</button>
+    <button onclick="showSection('getId')">📺 Prendre l'ID d'une chaîne</button>
+    <button onclick="showSection('musicSearch')">🎵 Rechercher une musique</button>
+    <button onclick="showSection('imageSearch')">🖼️ Rechercher une image</button>
+    <button onclick="showSection('spotify')">🎧 Spotify</button>
+  </div>
 
-  function encrypt() {
-    resetDownloadLink(); // Nettoyer le lien précédent
+  <!-- Section Obfuscation -->
+  <div class="section" id="obfuscate">
+    <h2>🎭 Obfusquer un fichier JavaScript</h2>
+    <input type="file" id="fileInput" accept=".js"><br><br>
+    <button onclick="encrypt()">Crypter</button>
+    <a id="downloadLink" download>📥 Télécharger le fichier crypté</a>
+    <div class="back" onclick="goBack()">← Retour au menu</div>
+  </div>
 
-    const file = input.files[0];
-    if (!file || !file.name.endsWith('.js')) {
-      alert('❌ Veuillez sélectionner un fichier JavaScript (.js)');
-      return;
+  <!-- Autres sections (vides pour l'instant) -->
+  <div class="section" id="getId">
+    <h2>📺 Prendre l'ID d'une chaîne</h2>
+    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <div class="back" onclick="goBack()">← Retour au menu</div>
+  </div>
+
+  <div class="section" id="musicSearch">
+    <h2>🎵 Rechercher une musique</h2>
+    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <div class="back" onclick="goBack()">← Retour au menu</div>
+  </div>
+
+  <div class="section" id="imageSearch">
+    <h2>🖼️ Rechercher une image</h2>
+    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <div class="back" onclick="goBack()">← Retour au menu</div>
+  </div>
+
+  <div class="section" id="spotify">
+    <h2>🎧 Spotify</h2>
+    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <div class="back" onclick="goBack()">← Retour au menu</div>
+  </div>
+
+  <!-- Obfuscator script -->
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
+  <script>
+    function showSection(id) {
+      document.getElementById("mainMenu").style.display = "none";
+      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      document.getElementById(id).style.display = "block";
     }
 
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const code = event.target.result;
+    function goBack() {
+      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      document.getElementById("mainMenu").style.display = "block";
+    }
 
-      try {
-        const obfuscated = JavaScriptObfuscator.obfuscate(code, {
-          compact: true,
-          controlFlowFlattening: true,
-          controlFlowFlatteningThreshold: 1,
-          deadCodeInjection: false,
-          debugProtection: false,
-          disableConsoleOutput: true,
-          identifierNamesGenerator: "hexadecimal",
-          renameGlobals: true,
-          rotateStringArray: true,
-          selfDefending: true,
-          stringArray: true,
-          stringArrayEncoding: ['base64'],
-          stringArrayThreshold: 1,
-          transformObjectKeys: true,
-          unicodeEscapeSequence: true
-        });
+    function encrypt() {
+      const input = document.getElementById('fileInput');
+      const downloadLink = document.getElementById('downloadLink');
 
-        const blob = new Blob([obfuscated.getObfuscatedCode()], { type: 'text/javascript' });
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = 'obfusqué_' + file.name;
-        downloadLink.style.display = 'inline-block';
-        downloadLink.textContent = "📥 Télécharger le fichier crypté";
-
-        // Ne pas réinitialiser input automatiquement
-      } catch (err) {
-        alert('❌ Une erreur est survenue pendant l\'obfuscation.');
-        console.error(err);
+      if (!input.files.length || !input.files[0].name.endsWith('.js')) {
+        alert('❌ Veuillez sélectionner un fichier .js');
+        return;
       }
-    };
 
-    reader.readAsText(file);
-  }
-</script>
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const code = event.target.result;
+
+        try {
+          const obfuscated = JavaScriptObfuscator.obfuscate(code, {
+            compact: true,
+            controlFlowFlattening: true,
+            controlFlowFlatteningThreshold: 1,
+            disableConsoleOutput: true,
+            identifierNamesGenerator: "hexadecimal",
+            renameGlobals: true,
+            rotateStringArray: true,
+            selfDefending: true,
+            stringArray: true,
+            stringArrayEncoding: ['base64'],
+            stringArrayThreshold: 1
+          });
+
+          const blob = new Blob([obfuscated.getObfuscatedCode()], { type: 'text/javascript' });
+          downloadLink.href = URL.createObjectURL(blob);
+          downloadLink.download = 'obfusqué_' + input.files[0].name;
+          downloadLink.style.display = 'inline-block';
+          downloadLink.textContent = "📥 Télécharger le fichier crypté";
+        } catch (err) {
+          alert('Erreur pendant l\'obfuscation.');
+          console.error(err);
+        }
+      };
+
+      reader.readAsText(input.files[0]);
+    }
+  </script>
+
+</body>
+      </html>
