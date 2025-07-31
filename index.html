@@ -70,7 +70,8 @@
 
   <div class="menu" id="mainMenu">
     <button onclick="showSection('obfuscate')">🎭 Obfusquer un fichier</button>
-    <button onclick="showSection('downloadSong')">🎵 Rechercher une musique</button>
+    <button onclick="showSection('idch')">🆔 Prendre l'id d'une chaîne WhatsApp</button>
+    <button onclick="showSection('music')">🎵 Rechercher une musique</button>
     <button onclick="showSection('imageSearch')">🖼️ Rechercher une image</button>
     <button onclick="showSection('spotify')">🎧 Spotify</button>
   </div>
@@ -85,15 +86,21 @@
   </div>
 
 
-<div class="section" id="downloadSong">
-  <h2>🎵 Télécharger une musique YouTube</h2>
-  <input type="text" id="songQuery" placeholder="Entrez le titre de la chanson ou un lien YouTube" style="width:90%; max-width:400px; padding:0.5rem;">
-  <br><br>
-  <button onclick="downloadMusic()">Télécharger</button>
-  <p id="songResult" style="margin-top:1rem;"></p>
-  <div class="back" onclick="goBack()">← Retour au menu</div>
-</div>
+  <div id="idch" class="section">
+    <h2>📡 ID d'une chaîne WhatsApp</h2>
+    <input type="text" id="linkChannel" placeholder="Ex: https://whatsapp.com/channel/xxxx">
+    <button onclick="getChannelID()">Obtenir l'ID</button>
+    <pre id="channelResult"></pre>
+  </div>
 
+  <!-- Section Rechercher une musique -->
+  <div id="music" class="section">
+    <h2>🎵 Rechercher une musique</h2>
+    <input type="text" id="songQuery" placeholder="Ex: booba petite fille">
+    <button onclick="searchSong()">🔍 Rechercher</button>
+    <div id="musicResult"></div>
+  </div>
+  
   <div class="section" id="imageSearch">
     <h2>🖼️ Rechercher une image</h2>
     <p>🔧 Fonctionnalité en cours d'intégration.</p>
@@ -108,45 +115,74 @@
 
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
   <script>
-async function downloadMusic() {
-  const query = document.getElementById("songQuery").value.trim();
-  const resultBox = document.getElementById("songResult");
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
 
-  if (!query || !query.includes("youtube.com/watch?v=")) {
-    resultBox.innerText = "❌ Veuillez entrer un lien YouTube valide.";
-    return;
-  }
+    async function getChannelID() {
+      const input = document.getElementById('linkChannel').value.trim();
+      const resultBox = document.getElementById('channelResult');
+      resultBox.innerText = "🔄 Vérification...";
 
-  resultBox.innerText = "🔄 Téléchargement en cours...";
-
-  const apis = [
-    `https://xploader-api.vercel.app/ytmp3?url=${query}`,
-    `https://api.ryzendesu.vip/api/downloader/ytmp3?url=${query}`,
-    `https://api.dreaded.site/api/ytdl/audio?url=${query}`
-  ];
-
-  for (const api of apis) {
-    try {
-      const res = await fetch(api);
-      const data = await res.json();
-
-      const mp3Url = data?.result?.downloadUrl || data?.url || data?.result;
-
-      if (mp3Url) {
-        resultBox.innerHTML = `
-          ✅ Fichier prêt !<br>
-          <audio controls src="${mp3Url}" style="width:100%; max-width:400px;"></audio><br>
-          <a href="${mp3Url}" download="musique.mp3">⬇️ Télécharger le MP3</a>
-        `;
+      if (!input.includes("whatsapp.com/channel/")) {
+        resultBox.innerText = "❌ Lien invalide.";
         return;
       }
-    } catch (err) {
-      continue;
-    }
-  }
 
-  resultBox.innerText = "❌ Toutes les APIs ont échoué. Réessaie plus tard.";
-}
+      const code = input.split("whatsapp.com/channel/")[1];
+
+      try {
+        const res = await fetch(`https://whatsapp-api-primis.vercel.app/idch/${code}`);
+        const data = await res.json();
+
+        if (!data?.id) return resultBox.innerText = "❌ Chaîne non trouvée.";
+
+        resultBox.innerText = `
+ID : ${data.id}
+Nom : ${data.name}
+Abonnés : ${data.subscribers}
+Statut : ${data.state}
+Vérifiée : ${data.verification == "VERIFIED" ? "✅ Oui" : "❌ Non"}
+        `;
+      } catch (err) {
+        resultBox.innerText = "❌ Erreur lors de la récupération.";
+      }
+    }
+
+    async function searchSong() {
+      const query = document.getElementById("songQuery").value.trim();
+      const resultBox = document.getElementById("musicResult");
+
+      if (!query) {
+        resultBox.innerText = "❌ Entrez un nom de musique.";
+        return;
+      }
+
+      resultBox.innerText = "🔄 Recherche en cours...";
+
+      try {
+        const res = await fetch(`https://ochinpo-helper.hf.space/yt?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!data?.result?.download?.audio) {
+          resultBox.innerText = "❌ Audio non trouvé.";
+          return;
+        }
+
+        const audioUrl = data.result.download.audio;
+        const title = data.result.title || "musique";
+
+        resultBox.innerHTML = `
+          ✅ <strong>${title}</strong><br><br>
+          <audio controls src="${audioUrl}"></audio><br><br>
+          <a href="${audioUrl}" download="${title}.mp3">⬇️ Télécharger le MP3</a>
+        `;
+      } catch (err) {
+        console.error(err);
+        resultBox.innerText = "❌ Une erreur est survenue.";
+      }
+    }
     function showSection(id) {
       document.getElementById("mainMenu").style.display = "none";
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
