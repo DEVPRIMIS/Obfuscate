@@ -2,61 +2,71 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrimisTool – Multi-Fonctions</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
       background: #111;
-      color: #f0f0f0;
+      color: #fff;
       text-align: center;
-      padding: 30px;
+      padding: 2rem;
     }
 
     h1 {
-      margin-bottom: 40px;
-      font-size: 32px;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
     }
 
     .menu button {
-      display: block;
-      margin: 15px auto;
-      padding: 15px 30px;
-      font-size: 18px;
-      background-color: #333;
+      width: 100%;
+      max-width: 320px;
+      margin: 1rem auto;
+      padding: 1rem;
+      font-size: 1.1rem;
+      background-color: #222;
       color: #fff;
-      border: none;
+      border: 1px solid #333;
       border-radius: 10px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.2s ease;
+      display: block;
     }
 
     .menu button:hover {
-      background-color: #555;
+      background-color: #333;
     }
 
     .section {
       display: none;
-      margin-top: 30px;
+      margin-top: 2rem;
+    }
+
+    input[type="file"] {
+      margin: 1rem 0;
     }
 
     #downloadLink {
       display: none;
-      margin-top: 20px;
-      font-size: 18px;
+      margin-top: 1rem;
+      font-size: 1rem;
       color: #4caf50;
+      display: block;
     }
 
     .back {
-      margin-top: 40px;
+      margin-top: 2rem;
       color: #888;
       cursor: pointer;
       text-decoration: underline;
+      font-size: 0.95rem;
     }
   </style>
 </head>
 <body>
 
-  <h1>🔧 PrimisTool – Centre d'outils</h1>
+  <h1>🔧 PrimisTool – Centre d'Outils</h1>
 
   <div class="menu" id="mainMenu">
     <button onclick="showSection('obfuscate')">🎭 Obfusquer un fichier</button>
@@ -66,51 +76,50 @@
     <button onclick="showSection('spotify')">🎧 Spotify</button>
   </div>
 
-  <!-- Section Obfuscation -->
+  <!-- Obfuscate Section -->
   <div class="section" id="obfuscate">
     <h2>🎭 Obfusquer un fichier JavaScript</h2>
-    <input type="file" id="fileInput" accept=".js"><br><br>
+    <input type="file" id="fileInput" accept=".js"><br>
     <button onclick="encrypt()">Crypter</button>
     <a id="downloadLink" download>📥 Télécharger le fichier crypté</a>
     <div class="back" onclick="goBack()">← Retour au menu</div>
   </div>
 
-  <!-- Autres sections (vides pour l'instant) -->
+  <!-- Other sections -->
   <div class="section" id="getId">
     <h2>📺 Prendre l'ID d'une chaîne</h2>
-    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <p>🔧 Fonctionnalité en cours d'intégration.</p>
     <div class="back" onclick="goBack()">← Retour au menu</div>
   </div>
 
   <div class="section" id="musicSearch">
     <h2>🎵 Rechercher une musique</h2>
-    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <p>🔧 Fonctionnalité en cours d'intégration.</p>
     <div class="back" onclick="goBack()">← Retour au menu</div>
   </div>
 
   <div class="section" id="imageSearch">
     <h2>🖼️ Rechercher une image</h2>
-    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <p>🔧 Fonctionnalité en cours d'intégration.</p>
     <div class="back" onclick="goBack()">← Retour au menu</div>
   </div>
 
   <div class="section" id="spotify">
     <h2>🎧 Spotify</h2>
-    <p>🔧 Cette fonctionnalité sera bientôt disponible.</p>
+    <p>🔧 Fonctionnalité en cours d'intégration.</p>
     <div class="back" onclick="goBack()">← Retour au menu</div>
   </div>
 
-  <!-- Obfuscator script -->
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
   <script>
     function showSection(id) {
       document.getElementById("mainMenu").style.display = "none";
-      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       document.getElementById(id).style.display = "block";
     }
 
     function goBack() {
-      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       document.getElementById("mainMenu").style.display = "block";
     }
 
@@ -145,8 +154,7 @@
           const blob = new Blob([obfuscated.getObfuscatedCode()], { type: 'text/javascript' });
           downloadLink.href = URL.createObjectURL(blob);
           downloadLink.download = 'obfusqué_' + input.files[0].name;
-          downloadLink.style.display = 'inline-block';
-          downloadLink.textContent = "📥 Télécharger le fichier crypté";
+          downloadLink.style.display = 'block';
         } catch (err) {
           alert('Erreur pendant l\'obfuscation.');
           console.error(err);
@@ -158,4 +166,4 @@
   </script>
 
 </body>
-      </html>
+</html>
